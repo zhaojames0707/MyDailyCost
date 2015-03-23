@@ -14,12 +14,11 @@ import java.util.List;
 /**
  * Created by zhaoxiaoyu on 15/3/19.
  */
-public class MoneyDAO extends SQLiteOpenHelper{
+public class RecordDAO extends SQLiteOpenHelper{
 
-    private SQLiteDatabase db;
     private static String DATABASE_NAME = "MyDailyCost";
     private static int DATABASE_VERSION = 1;
-    public static final String CREATE_MONEY = "create table Money (" +
+    public static final String CREATE_MONEY = "create table COST_RECORD(" +
             "id integer primary key autoincrement, " +
             "amount real, " +
             "purpose text, " +
@@ -28,11 +27,11 @@ public class MoneyDAO extends SQLiteOpenHelper{
             "amount_type integer " +
             ")";
 
-    public MoneyDAO(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
+    public RecordDAO(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);
     }
 
-    public MoneyDAO(Context context){
+    public RecordDAO(Context context){
         this(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
     @Override
@@ -54,45 +53,56 @@ public class MoneyDAO extends SQLiteOpenHelper{
      */
     public boolean addOneRecord(Record record){
         boolean isSuccessful = false;
+        SQLiteDatabase db = null;
         try {
+            db = getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put("amount", record.getAmount());
             values.put("purpose", record.getPurpose());
             values.put("remark", record.getRemark());
             values.put("date", record.getDate().getTime());
             values.put("amount_type", record.getAmountType());
-            if(!db.isOpen()){
-                db = getWritableDatabase();
-            }
             db.beginTransaction();
-            db.insert("Money", null, values);
+            db.insert("COST_RECORD", null, values);
             db.setTransactionSuccessful();
             isSuccessful = true;
         } catch (Exception e){
             isSuccessful = false;
         } finally{
             db.endTransaction();
-            db.close();
+            if(db!=null){
+                db.close();
+            }
         }
         return isSuccessful;
     }
 
     public List<Record> getAllRecords(){
+        Log.d("RecordDAO", "getAllRecords executed!");
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
         List<Record> recordList = new ArrayList<Record>();
         try{
-            if(!db.isOpen()){
-                db = getWritableDatabase();
-            }
-            Cursor cursor = db.rawQuery("select amount, date from money", null);
+            db = getWritableDatabase();
+            cursor = db.rawQuery("select amount, date, amount_type, purpose from COST_RECORD", null);
             while(cursor.moveToNext()){
                 Record record = new Record();
                 record.setAmount(cursor.getDouble(0));
-                record.setDate(new Date(cursor.getInt(1)));
+                record.setDate(new Date(cursor.getLong(1)));
+                record.setAmountType(cursor.getInt(2));
+                record.setPurpose(cursor.getString(3));
                 recordList.add(record);
+                Log.d("RecordDAO", record.toString());
             }
-            cursor.close();
         } catch (Exception e){
             Log.e("getAllRecords", e.toString());
+        } finally{
+            if(cursor!=null){
+                cursor.close();
+            }
+            if(db!=null){
+                db.close();
+            }
         }
         return recordList;
     }

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -25,8 +26,23 @@ public class RecordAdapter extends ArrayAdapter<Record> {
         View view = LayoutInflater.from(getContext()).inflate(resourceId, null);
         TextView recordDateTextView = (TextView) view.findViewById(R.id.record_date_text_view);
         TextView recordAmountTextView = (TextView) view.findViewById(R.id.record_amount_text_view);
-        recordDateTextView.setText(record.getDate().toString());
+        TextView recordAmountTypeTextView = (TextView) view.findViewById(R.id.record_amount_type_text_view);
+        TextView recordPurposeTextView = (TextView) view.findViewById(R.id.record_purpose_text_view);
+
+        String recordDateStr = new SimpleDateFormat("yyyy年MM月dd日").format(record.getDate());
+        String recordAmountTypeStr = "";
+        if(record.getAmountType() == Record.TYPE_INCOME){
+            recordAmountTypeStr = "收入";
+        }
+        else if(record.getAmountType() == Record.TYPE_OUTCOME){
+            recordAmountTypeStr = "支出";
+        }
+
+        recordDateTextView.setText(recordDateStr);
+        recordAmountTypeTextView.setText(recordAmountTypeStr);
+        recordPurposeTextView.setText(record.getPurpose());
         recordAmountTextView.setText(record.getAmount() + "元");
+
         return view;
     }
 }

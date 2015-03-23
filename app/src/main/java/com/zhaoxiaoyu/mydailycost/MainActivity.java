@@ -37,9 +37,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         addOutcome.setOnClickListener(this);
         addIncome.setOnClickListener(this);
 
-        MoneyDAO moneyDAO = new MoneyDAO(this);
-        List<Record> recordList = moneyDAO.getAllRecords();
-        Record record = new Record();
+        RecordDAO recordDAO = new RecordDAO(this);
+        List<Record> recordList = recordDAO.getAllRecords();
         RecordAdapter recordAdapter = new RecordAdapter(this, R.layout.record_item, recordList);
         recordsListView.setAdapter(recordAdapter);
     }
@@ -47,17 +46,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         Record record = null;
-        MoneyDAO moneyDAO = null;
+        RecordDAO recordDAO = null;
         switch (v.getId()){
             case R.id.add_outcome:
                 record = analyzeInputRecord(Record.TYPE_OUTCOME);
-                moneyDAO = new MoneyDAO(MainActivity.this);
-                moneyDAO.addOneRecord(record);
+                recordDAO = new RecordDAO(MainActivity.this);
+                recordDAO.addOneRecord(record);
                 break;
             case R.id.add_income:
                 record = analyzeInputRecord(Record.TYPE_INCOME);
-                moneyDAO = new MoneyDAO(MainActivity.this);
-                moneyDAO.addOneRecord(record);
+                recordDAO = new RecordDAO(MainActivity.this);
+                recordDAO.addOneRecord(record);
                 break;
             default:
                 break;
@@ -70,11 +69,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
      * @return 账目记录的对象
      */
     private Record analyzeInputRecord(int amountType){
+        String moneyAmountStr = moneyAmount.getText().toString();
+        String moneyPurposeStr = moneyPurpose.getText().toString();
+        String moneyRemarkStr = moneyRemark.getText().toString();
+        double moneyAmountValue = Double.parseDouble(moneyAmountStr);
+
         Record record = new Record();
-        record.setAmount(Double.parseDouble(moneyAmount.getText().toString()));
-        record.setPurpose(moneyPurpose.getText().toString());
-        record.setRemark(moneyRemark.getText().toString());
-        record.setAmount(amountType);
+        record.setAmount(moneyAmountValue);
+        record.setPurpose(moneyPurposeStr);
+        record.setRemark(moneyRemarkStr);
+        record.setAmountType(amountType);
         record.setDate(new Date());
         return record;
     }

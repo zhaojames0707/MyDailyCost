@@ -1,2 +1,3 @@
 # MyDailyCost
-Not recommanded for personal use yet.
+Just a start-up app.
+To be continued...

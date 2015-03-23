@@ -16,6 +16,19 @@ public class Record {
     private Date date;//账目时间
     private int amountType;//支出:0，收入:1
 
+
+    @Override
+    public String toString() {
+        return "Record{" +
+                "id=" + id +
+                ", amount=" + amount +
+                ", purpose='" + purpose + '\'' +
+                ", remark='" + remark + '\'' +
+                ", date=" + date +
+                ", amountType=" + amountType +
+                '}';
+    }
+
     public int getAmountType() {
         return amountType;
     }
